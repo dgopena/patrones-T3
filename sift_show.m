@@ -1,7 +1,7 @@
-function [f, d] = vlad_show(img, c)
+function [f, d] = sift_show(img, c)
   imshow(img);
 
-  [f,d] = vlad(img);
+  [f,d] = sift(img);
 
   perm = randperm(size(f,2));
   sel = perm(1:min(c, size(f,2)));
