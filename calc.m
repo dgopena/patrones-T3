@@ -1,7 +1,8 @@
-% Setup
-% =====
-procCount = 8;
-
+% Setup local cluster
+% ===================
+if matlabpool('size') == 0 % checking to see if my pool is already open
+  matlabpool open 8
+end
 
 % Load
 % ====
@@ -11,18 +12,23 @@ fileCount = size(files, 1);
 
 % SIFT
 % ====
-parfor_progress(idivide(fileCount, int16(20)));
-parfor(i=1:fileCount, procCount)
+for i=1:fileCount
+  files(i).sift_f = [];
+  files(i).sift_d = [];
+end
+
+parfor_progress(fileCount);
+parfor i=1:fileCount
   % Load image
   name = files(i).name;
   img = imread(name);
 
   % Calculate SIFT
-  [files(i).sift_f, files(i).sift_d] = sift(img);
+  [f, d] = vl_sift(single(gs(img)));
+  files(i).sift_f = f;
+  files(i).sift_d = d;
 
   % Report progress
-  if(mod(i, 20)==0)
-    parfor_progress;
-  end
+  parfor_progress;
 end
 parfor_progress(0);

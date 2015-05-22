@@ -1,7 +1,7 @@
 function [f, d] = sift_show(img, c)
   imshow(img);
 
-  [f,d] = sift(img);
+  [f, d] = vl_sift(single(gs(img)));
 
   perm = randperm(size(f,2));
   sel = perm(1:min(c, size(f,2)));
