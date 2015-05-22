@@ -22,7 +22,7 @@ parfor(i=1:fileCount, procCount)
 
   % Report progress
   if(mod(i, 20)==0)
-    parfor_progress
+    parfor_progress;
   end
 end
 parfor_progress(0);
