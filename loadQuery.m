@@ -19,12 +19,17 @@ function [q] = loadQuery(qName)
   str = q.query(1);
   str = str{1};
   datasetRoot = 'Datasets/oxbuild_images/';
-  q.imgPath = strcat(strrep(str, 'oxc1_', datasetRoot), '.jpg');
+  q.imgName = strcat(strrep(str, 'oxc1_', ''), '.jpg');
+  q.imgPath = strcat(datasetRoot, q.imgName);
 
   % Load groud truth
   % ================
   q.good        = fLines( strcat(dName, '_good.txt')  );
   q.junk        = fLines( strcat(dName, '_junk.txt')  );
   q.ok          = fLines( strcat(dName, '_ok.txt')    );
+  
+  q.goodPath    = strcat(datasetRoot, q.good, '.jpg');
+  q.junkPath    = strcat(datasetRoot, q.junk, '.jpg');
+  q.okPath      = strcat(datasetRoot, q.ok,   '.jpg');
 end
 
