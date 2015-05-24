@@ -1,5 +1,5 @@
-% Setup local cluster
-% ===================
+%% Setup local cluster
+%  ===================
 disp('Setting up local cluter');
 if matlabpool('size') == 0 % checking to see if my pool is already open
   disp('  Initializing thread pool');
@@ -9,23 +9,68 @@ else
 end
 
 
-% Load files and calculate features
-% =================================
+%% Load files and calculate features
+%  =================================
 disp('Loading Dataset');
 calc
 
+
+
+
+%% Load queries
+%  ============
+disp('Loading Query files');
+% Load query files
+% ----------------
+queries = arrayfun(@loadQuery, ls('GroundTruths'));
+fprintf('  Found %d Query files\n', size(queries, 1));
+
+
+% Build nonQueries
+% ----------------
+disp('Building nonQuery list');
+% Assume all files are not from a query
+nonQueries = files;
+i = [];
+parfor_progress(size(files));
+for f=1:size(files)
+  for q=1:size(queries)
+    if(strcmp(queries(q).imgPath, files(f).path))
+      % If the file is a query mark it for removal
+      i = [i f];  % Preallocating won't gain too much (only 55 queries)
+      break;
+    end
+  end
+  parfor_progress;
+end
+parfor_progress(0);
+clear f;
+clear q;
+% Remove queries
+nonQueries(i) = [];
+clear i;
+fprintf('  %d files are not on a query\n', size(nonQueries, 1));
+
+
+
+
+
+
+
 %% VLAD encoding
-sample = getRandomPerm([files.sift_d],100000);
+sample = getRandomPerm([nonQueries.sift_d],100000);
+sample = single(sample);  % vl_kmeans uses single precision
+
 
 %% Cluster and assignment building
 disp('Building clusters...');
-%Build clusters
-%[C256, A256, ENERGY256] = vl_kmeans(single(sample), 256);
-%[C128, A128, ENERGY128] = vl_kmeans(single(sample), 128);
-[C64, A64, ENERGY64] = vl_kmeans(single(sample), 64);
+% Build clusters
+[C256, A256, ENERGY256] = vl_kmeans(sample, 256);
+[C128, A128, ENERGY128] = vl_kmeans(sample, 128);
+[ C64,  A64,  ENERGY64] = vl_kmeans(sample,  64);
 disp('Done.');
 
-%C corresponds to the centers. 
+%C corresponds to the centers.
 %A is the assignment of each data to a center
 
 
@@ -46,39 +91,12 @@ assignments(sub2ind(size(assignments), double(nn), 1:numel(nn))) = 1 ;
 %%
 N = length(files);
 vlad = cell(N,1);
-for i=1:N
-    display(strcat('Processing image--', int2str(i)));
-    vlad{i} = vl_vlad(single(files(i,1).sift_d),centers,assignments);
+
+disp('Calculating vlad');
+parfor_progress(N);
+parfor i=1:N
+  vlad{i} = vl_vlad(single(files(i,1).sift_d),centers,assignments);
+  parfor_progress;
 end
+parfor_progress(0);
 
-
-%% Load queries
-% ============
-disp('Loading Query files');
-% Load query files
-% ----------------
-queries = arrayfun(@loadQuery, ls('GroundTruths'));
-fprintf('  Found %d Query files\n', size(queries, 1));
-
-
-% Build nonQueries
-% ----------------
-disp('Building nonQuery list');
-% Assume all files are not from a query
-nonQueries = files;
-i = [];
-for f=1:size(files)
-  for q=1:size(queries)
-    if(strcmp(queries(q).imgPath, files(f).path))
-      % If the file is a query mark it for removal
-      i = [i f];  % Preallocating won't gain too much (only 55 queries)
-      break;
-    end
-  end
-end
-clear f;
-clear q;
-% Remove queries
-nonQueries(i) = [];
-clear i;
-fprintf('  %d files are not on a query\n', size(nonQueries, 1));
