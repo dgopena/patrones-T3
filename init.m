@@ -115,8 +115,10 @@ for q = 1:size(queries)
   for f = 1:size(nonQueries)
     % Compute distances to query's VLAD descriptor
     euclidDist{q,f} = norm(files(f).vlad - targetVlad);
-    hellinDist{q,f} = norm(sqrt(files(f).vlad) - sqrt(targetVlad));
+    hellinDist{q,f} = norm(sqrt(abs(files(f).vlad)) - sqrt(abs(targetVlad)));
   end
+  clear targetVlad;
+
   parfor_progress;
 end
 parfor_progress(0);
