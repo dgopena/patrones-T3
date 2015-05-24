@@ -1,6 +1,7 @@
 
 # Datasets directory
 Datasets/
+vlfeat-0.9.20/
 
 # Matlab parfor_progress tmp file
 parfor_progress.txt

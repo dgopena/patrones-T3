@@ -17,12 +17,12 @@ calc
 %% VLAD encoding
 sample = getRandomPerm([files.sift_d],100000);
 
-%%Cluster and assignment building
+%% Cluster and assignment building
 disp('Building clusters...');
 %Build clusters
-[C256, A256, ENERGY256] = vl_kmeans(single(sample), 256);
+%[C256, A256, ENERGY256] = vl_kmeans(single(sample), 256);
 %[C128, A128, ENERGY128] = vl_kmeans(single(sample), 128);
-%[C64, A64, ENERGY64] = vl_kmeans(single(sample), 64);
+[C64, A64, ENERGY64] = vl_kmeans(single(sample), 64);
 disp('Done.');
 
 %C corresponds to the centers. 
