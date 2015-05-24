@@ -48,3 +48,4 @@ parfor_progress(0);
 
 disp('Saving features to "Datasets/oxbuild.mat"');
 save('Datasets/oxbuild.mat', 'files');
+disp('done');

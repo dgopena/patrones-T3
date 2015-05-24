@@ -1,5 +1,9 @@
 
-calc
+calc; %SIFT descriptors are calculated
 
-% Load queries
+%% VLAD encoding
+
+
+
+%% Load queries
 queries = arrayfun(@loadQuery, ls('GroundTruths'));
