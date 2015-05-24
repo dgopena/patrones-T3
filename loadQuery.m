@@ -31,5 +31,8 @@ function [q] = loadQuery(qName)
   q.goodPath    = strcat(datasetRoot, q.good, '.jpg');
   q.junkPath    = strcat(datasetRoot, q.junk, '.jpg');
   q.okPath      = strcat(datasetRoot, q.ok,   '.jpg');
+  
+  % Index on files array
+  q.index_f = -1;
 end
 

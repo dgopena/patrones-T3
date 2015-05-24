@@ -37,6 +37,8 @@ parfor i=1:fileCount
   [f, d] = vl_sift(single(gs(img)));
   files(i).sift_f = f;
   files(i).sift_d = d;
+  
+  files(i).vlad = [];
 
   % Report progress
   parfor_progress;
