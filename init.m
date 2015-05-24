@@ -111,11 +111,12 @@ hellinDist = cell(size(queries, 1), size(nonQueries, 1));
 disp('Computing query results');
 parfor_progress(size(queries, 1));
 for q = 1:size(queries)
-    targetVlad = files(queries(q).index_f).vlad;
-    for f = 1:size(nonQueries)
-        % euclidean
-        euclidDist{q,f} = norm(files(f).vlad - targetVlad);
-    end
-    parfor_progress;
+  targetVlad = files(queries(q).index_f).vlad;
+  for f = 1:size(nonQueries)
+    % Compute distances to query's VLAD descriptor
+    euclidDist{q,f} = norm(files(f).vlad - targetVlad);
+    hellinDist{q,f} = norm(sqrt(files(f).vlad) - sqrt(targetVlad));
+  end
+  parfor_progress;
 end
 parfor_progress(0);
