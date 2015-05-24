@@ -17,6 +17,9 @@ parfor_progress.txt
 # OSX / *nix default autosave extension
 *~
 
+#all mat save states
+*.mat
+
 # Compiled MEX binaries (all platforms)
 *.mex*
 
