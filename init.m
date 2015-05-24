@@ -96,6 +96,7 @@ disp('Calculating vlad');
 parfor_progress(N);
 parfor i=1:N
   vlad{i} = vl_vlad(single(files(i,1).sift_d),centers,assignments);
+  vlad{i} = reshape(vlad{i},[128,numClusters]);
   parfor_progress;
 end
 parfor_progress(0);
