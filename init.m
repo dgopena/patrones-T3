@@ -23,9 +23,9 @@ sample = single(sample);  % vl_kmeans uses single precision
 %% Cluster and assignment building
 disp('Building clusters...');
 % Build clusters
-[C256, A256, ENERGY256] = vl_kmeans(sample, 256);
-[C128, A128, ENERGY128] = vl_kmeans(sample, 128);
-[ C64,  A64,  ENERGY64] = vl_kmeans(sample,  64);
+Codewords256 = vl_kmeans(sample, 256);
+Codewords128 = vl_kmeans(sample, 128);
+Codewords64 = vl_kmeans(sample,  64);
 disp('Done.');
 
 %C corresponds to the centers.
@@ -33,15 +33,15 @@ disp('Done.');
 
 
 %% obtenemos nearest neighbors para VLAD
-centers = C64;
+visualWords = Codewords64;
 numClusters = 64;
 
-kdtree = vl_kdtreebuild(centers) ;
-[nn, distances] = vl_kdtreequery(kdtree, centers, single(sample)) ;
+kdtree = vl_kdtreebuild(visualwords) ;
+[nn, distances] = vl_kdtreequery(kdtree, visualwords, single(sample)) ;
 
 %% assignment matrix
 
-assignments = zeros(numClusters,100000, 'single') ;
+assignments = zeros(size(visualWords,2),100000, 'single') ;
 assignments(sub2ind(size(assignments), double(nn), 1:numel(nn))) = 1 ;
 
 %assignments = zeros(numClusters,100000);
