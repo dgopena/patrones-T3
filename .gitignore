@@ -26,4 +26,4 @@ parfor_progress.txt
 # Simulink Code Generation
 slprj/
 Dataset/
-oxbuild.mat
+*.mat
