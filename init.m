@@ -65,28 +65,28 @@ sample = single(sample);  % vl_kmeans uses single precision
 %% Cluster and assignment building
 disp('Building clusters...');
 % Build clusters
-[C256, A256, ENERGY256] = vl_kmeans(sample, 256);
-[C128, A128, ENERGY128] = vl_kmeans(sample, 128);
-[ C64,  A64,  ENERGY64] = vl_kmeans(sample,  64);
+Codewords256 = vl_kmeans(sample, 256);
+Codewords128 = vl_kmeans(sample, 128);
+Codewords64  = vl_kmeans(sample,  64);
 disp('Done.');
 
-%C corresponds to the centers.
-%A is the assignment of each data to a center
+
 
 
 %% obtenemos nearest neighbors para VLAD
-centers = C64;
-numClusters = 64;
 
-kdtree = vl_kdtreebuild(centers) ;
-[nn, distances] = vl_kdtreequery(kdtree, centers, single(sample)) ;
+% TODO: Move to a function
+visualWords = Codewords64;
+
+kdtree = vl_kdtreebuild(visualWords) ;
+[nn, distances] = vl_kdtreequery(kdtree, visualWords, sample) ;
 
 %% assignment matrix
 
-assignments = zeros(numClusters,100000, 'single') ;
+assignments = zeros(size(visualWords,2),100000, 'single') ;
 assignments(sub2ind(size(assignments), double(nn), 1:numel(nn))) = 1 ;
 
-%assignments = zeros(numClusters,100000);
+%assignments = zeros(size(visualWords,2),100000);
 %assignments(sub2ind(size(assignments), nn, 1:length(nn))) = 1;
 %%
 N = length(files);
@@ -95,7 +95,7 @@ vlad = cell(N,1);
 disp('Calculating vlad');
 parfor_progress(N);
 parfor i=1:N
-  vlad{i} = vl_vlad(single(files(i,1).sift_d),centers,assignments);
+  vlad{i} = vl_vlad(single(files(i,1).sift_d),visualWords,assignments);
   parfor_progress;
 end
 parfor_progress(0);
