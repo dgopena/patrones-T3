@@ -1,21 +1,18 @@
-% Setup local cluster
-% ===================
-if matlabpool('size') == 0 % checking to see if my pool is already open
-  matlabpool open 8
-end
-
+% Check existing Saved Data
+% =========================
 if exist('Datasets/oxbuild.mat', 'file')
   if ~exist('files', 'var')
-    disp('Loading previously computed data (Datasets/oxbuild.mat)');
+    disp('  Loading previously computed data (Datasets/oxbuild.mat)');
     load('Datasets/oxbuild.mat');
   else
-    disp('Not overwriting "files"');
+    disp('  Not overwriting "files", data was probably already loaded');
   end
   return
 end
 
 % Load
 % ====
+disp('  Loading files and calculating features');
 files = loadDataset('oxbuild_images');
 fileCount = size(files, 1);
 
