@@ -1,0 +1,46 @@
+%File: formatting-instruction.tex
+\documentclass[letterpaper]{article}
+
+%% Languages
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+
+\usepackage{aaai}
+\usepackage{times}
+\usepackage{helvet}
+\usepackage{courier}
+
+%Images
+\usepackage{graphicx}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\graphicspath{{Graphics/}{Images/}}
+
+\usepackage{caption}
+\usepackage{subcaption}
+
+
+%code
+\usepackage{listings}
+\usepackage{xcolor}
+\lstset { %
+    basicstyle=\small
+    language=C++,
+    backgroundcolor=\color{black!5}, % set backgroundcolor
+    basicstyle=\footnotesize,% basic font setting
+}
+
+\frenchspacing
+\setlength{\pdfpagewidth}{8.5in}
+\setlength{\pdfpageheight}{11in}
+\pdfinfo{
+/Title (Reconocimiento de Patrones - Tarea 3)
+/Author (Dietrich Daroch, Diego Peña)}
+\setcounter{secnumdepth}{0}  
+
+
+
+\begin{document}
+
+\input{doc.tex}
+
+\end{document}
