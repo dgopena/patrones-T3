@@ -24,6 +24,29 @@ disp('Loading Query files');
 queries = arrayfun(@loadQuery, ls('GroundTruths'));
 fprintf('  Found %d Query files\n', size(queries, 1));
 
+% Get query results indices
+disp('  Looking up queries results')
+parfor_progress(size(queries,1));
+for q=1:size(queries,1)
+
+  % Pre alloc indices
+  queries(q).goodIndex = zeros(size(queries(q).goodPath, 1),1);
+  
+  % Search indices
+  for g=1:size(queries(q).goodPath, 1)
+    gPath = queries(q).goodPath(g);  % Needed path
+    for f=1:size(files,1)
+      fPath = files(f).path;
+      if(strcmp(gPath, fPath))
+        queries(q).goodIndex(g)=f;  % save index
+        break
+      end
+    end
+  end
+  parfor_progress;
+end
+parfor_progress(0);
+
 % Build nonQueries
 % ----------------
 disp('Building nonQuery list');
@@ -104,14 +127,14 @@ parfor_progress(0);
 
 
 %% calculo de distancias por query
-euclidDist = zeros(size(queries, 1), size(nonQueries, 1)); %distance of each non-query towards each query
-hellinDist = zeros(size(queries, 1), size(nonQueries, 1));
+euclidDist = zeros(size(queries, 1), size(files, 1)); %distance of each non-query towards each query
+hellinDist = zeros(size(queries, 1), size(files, 1));
 
 disp('Computing query results');
 parfor_progress(size(queries, 1));
-for q = 1:size(queries)
+for q = 1:size(queries,1)
   targetVlad = files(queries(q).index_f).vlad;
-  for f = 1:size(nonQueries)
+  for f=1:size(files)
     % Compute distances to query's VLAD descriptor
     euclidDist(q,f) = norm(files(f).vlad - targetVlad);
     hellinDist(q,f) = norm(sqrt(abs(files(f).vlad)) - sqrt(abs(targetVlad)));
@@ -121,3 +144,54 @@ for q = 1:size(queries)
   parfor_progress;
 end
 parfor_progress(0);
+
+
+
+
+%% Compute Rankings
+%  ================
+disp('Computing Rankings');
+parfor_progress(size(queries,1));
+eR=0;
+eP=0;
+hR=0;
+hP=0;
+for q = 1:size(queries,1)
+  % Distance
+  eDist = euclidDist(q,:);
+  hDist = hellinDist(q,:);
+
+  % Order derived
+  [~, queries(q).eRank] = sort(eDist);
+  [~, queries(q).hRank] = sort(hDist);
+  
+  % eval
+  eSucc = ismember(queries(q).eRank, queries(q).goodIndex');
+  hSucc = ismember(queries(q).hRank, queries(q).goodIndex');
+  
+  
+  
+  queries(q).eSucc = eSucc';
+  queries(q).eSuccI = find(queries(q).eSucc);
+  queries(q).hSucc = hSucc';
+  queries(q).hSuccI = find(queries(q).hSucc);
+  
+  labels = zeros(size(eSucc));
+  labels(1:size(queries(q).goodIndex)) = 1;
+  
+  
+  [erecall, eprecision] = vl_roc(labels, eSucc);
+  eR = eR + erecall;
+  eP = eP + eprecision;
+  [hrecall, hprecision] = vl_roc(labels, hSucc);
+  hR = hR + hrecall;
+  hP = hP + hprecision;
+  
+  parfor_progress;
+end
+parfor_progress(0);
+
+eR=eR/size(queries,1);
+eP=eP/size(queries,1);
+hR=hR/size(queries,1);
+hP=hP/size(queries,1);

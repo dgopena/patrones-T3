@@ -34,5 +34,9 @@ function [q] = loadQuery(qName)
   
   % Index on files array
   q.index_f = -1;
+  
+  % Rankings
+  q.eRank = [];
+  q.hRank = [];
 end
 
